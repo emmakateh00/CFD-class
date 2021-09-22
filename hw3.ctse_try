@@ -1,0 +1,66 @@
+import numpy as np
+import sympy as sy
+import math
+import matplotlib as plt
+#import scipyplot
+
+## %matplotlib inline
+
+## Part 1: Forward, Backward, and Central Differences
+def derivative(f, a, method, h):
+    if method == 'central':
+        return (f(a + h) - f(a - h))/(2*h)
+    elif method == 'forward':
+        return (f(a + h) - f(a))/h
+    elif method == 'backward':
+        return (f(a) - f(a - h))/h
+    else:
+        print("Method must be central, forward, or backward.")
+
+f = np.cos
+a = math.pi/4
+h = 0.1
+n = 1
+while n < 30:
+    print("h:", h, 'central:', derivative(f, a, 'central', h), "forward:", derivative(f, a, 'forward', h), "backward:", derivative(f, a, 'backward', h))
+    h = h/2
+    n = n + 1
+
+
+## Part 2: Complex Taylor Series Expansion Derivative
+f = np.cos
+a = math.pi/4
+h = 0.1
+n = 2
+#i = sqrt(-1)
+
+def factorial(n):
+    if n <= 0:
+        return 1
+    else:
+        return n*factorial(n-1)
+
+def taylor(f, x0,n):
+    i = 0
+    p = 0
+    while i <= n:
+        p = p + (f.diff(x,i).subs(x,x0))/(factorial(i))*(x-x0)**i
+        i += 1
+    return p
+
+
+
+## Part 3: Compare values of the derivative with the exact value and report percent error
+
+x = np.linspace(0,5*np.pi,100)
+dydx = derivative(np.sin, x, 'central', 0.01)
+
+dYdx = np.cos(x)
+
+plt.figure(figsize=(12,5))
+plt.plot(x,dydx,'r.',label='Central Difference')
+plt.plot(x,dYdx,'b',label='True Value')
+
+plt.title('Central Difference Derivative of y = cos(x)')
+plt.legend(loc='best')
+plt.show()
