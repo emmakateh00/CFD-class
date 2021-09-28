@@ -1,0 +1,38 @@
+import math
+import cmath
+
+def fexact(x):
+    return 
+
+
+def freal(x):
+    return math.exp(x) / ((math.sin(x)) ** (3) + (math.cos(x)) ** (3))
+
+
+def fcomplex(y, k):
+    return cmath.exp(complex(y, k)) / ((cmath.sin(complex(y, k))) ** (3) + (cmath.cos(complex(y, k))) ** (3))
+
+
+def derivative(x, method, h):
+    if method == 'central':
+        return (freal(x + h) - freal(x - h))/(2*h)
+    elif method == 'forward':
+        return (freal(x + h) - freal(x))/h
+    elif method == 'backward':
+        return (freal(x) - freal(x - h))/h
+    else:
+        print("Method must be central, forward, or backward.")
+
+h = 0.1
+k = 0.1
+s = 1
+x = math.pi/4
+y= math.pi/4
+
+while s < 64:
+    fc = fcomplex(y, k)
+    print("h:", h, 'central:', derivative(x, 'central', h), "forward:", derivative(x, 'forward', h), "backward:", derivative(x, 'backward', h), "ctse:", fc.imag/k)
+    h = h/2
+    k = k/2
+    s = s + 1
+
