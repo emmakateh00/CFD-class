@@ -1,0 +1,89 @@
+import math
+import cmath
+
+class DualNumber:
+    def __init__(self, real, dual):
+        self.real = real
+        self.dual = dual
+
+    def __add__(self, other):
+        if isinstance(other, DualNumber):
+            return DualNumber(self.real + other.real,
+                              self.dual + other.dual)
+        else:
+            return DualNumber(self.real + other, self.dual)
+    __radd__ = __add__
+
+    def __sub__(self, other):
+        if isinstance(other, DualNumber):
+            return DualNumber(self.real - other.real,
+                              self.dual - other.dual)
+        else:
+            return DualNumber(self.real - other, self.dual)
+
+    def __rsub__(self, other):
+        return DualNumber(other, 0) - self
+
+    def __mul__(self, other):
+        if isinstance(other, DualNumber):
+            return DualNumber(self.real * other.real,
+                              self.real * other.dual + self.dual * other.real)
+        else:
+            return DualNumber(self.real * other, self.dual * other)
+    __rmul__ = __mul__
+
+    def __div__(self, other):
+        if isinstance(other, DualNumber):
+            return DualNumber(self.real/other.real,
+                              (self.dual*other.real - self.real*other.dual)/(other.real**2))
+        else:
+            return (1/other) * self
+
+    def __rdiv__(self, other):
+        return DualNumber(other, 0).__div__(self)
+
+    def __pow__(self, other):
+        return DualNumber(self.real**other,
+                          self.dual * other * self.real**(other - 1))
+
+    def __repr__(self):
+        return repr(self.real) + ' + ' + repr(self.dual) + '*epsilon'
+
+#def auto_diff(f, x):
+    #return f(DualNumber(x, 1.)).dual
+
+
+def freal(x):
+    return math.exp(x) / ((math.sin(x)) ** (3) + (math.cos(x)) ** (3))
+
+
+def fcomplex(x, k):
+    return cmath.exp(complex(x, k)) / ((cmath.sin(complex(x, k))) ** (3) + (cmath.cos(complex(x, k))) ** (3))
+
+def fdual(x):
+    return math.exp(DualNumber(x)) / ((math.sin(DualNumber(x))) ** (3) + (math.cos(DualNumber(x))) ** (3))
+
+
+def derivative(x, method, h):
+    if method == 'central':
+        return (freal(x + h) - freal(x - h))/(2*h)
+    elif method == 'forward':
+        return (freal(x + h) - freal(x))/h
+    elif method == 'backward':
+        return (freal(x) - freal(x - h))/h
+    else:
+        print("Method must be central, forward, or backward.")
+
+h = 0.1
+k = 0.1
+l = 0.1
+s = 1
+x = math.pi/4
+
+fc = fcomplex(x, k)
+
+while s < 64:
+    print("h:", h, 'central:', derivative(x, 'central', h), "forward:", derivative(x, 'forward', h), "backward:", derivative(x, 'backward', h), "ctse:", fc.imag/k, "dual:", fdual)
+    h = h/2
+    k = k/2
+    s = s + 1
