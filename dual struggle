@@ -1,0 +1,43 @@
+import numpy as np
+from ad_dual import Dual
+from func import exp_d, sin_d, cos_d
+
+import math
+import cmath
+
+def freal(x):
+    return math.exp(x) / ((math.sin(x)) ** (3) + (math.cos(x)) ** (3))
+
+
+def fcomplex(x, k):
+    return cmath.exp(complex(x, k)) / ((cmath.sin(complex(x, k))) ** (3) + (cmath.cos(complex(x, k))) ** (3))
+
+def fdual(x):
+    return np.exp_d(x) / ((np.sin_d(x)) ** (3) + (np.cos_d(x)) ** (3))
+
+
+def derivative(x, method, h):
+    if method == 'central':
+        return (freal(x + h) - freal(x - h))/(2*h)
+    elif method == 'forward':
+        return (freal(x + h) - freal(x))/h
+    elif method == 'backward':
+        return (freal(x) - freal(x - h))/h
+    else:
+        print("Method must be central, forward, or backward.")
+
+h = 0.1
+k = 0.1
+s = 1
+x = math.pi/4
+y = math.pi/4
+z = math.pi/4
+
+fc = fcomplex(y, k)
+
+while s < 64:
+    print("h:", h, 'central:', derivative(x, 'central', h), "forward:", derivative(x, 'forward', h), "backward:", derivative(x, 'backward', h), "ctse:", fc.imag/k, "dual:", fdual)
+    h = h/2
+    k = k/2
+    s = s + 1
+
